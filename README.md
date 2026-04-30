@@ -1,13 +1,14 @@
 # hf-paper-skill
 
-HuggingFace Papers 热门论文获取与中文翻译 — Hermes Agent skill
+HuggingFace Papers 热门论文获取与中文翻译
 
 ## 功能
 
 - 获取 HuggingFace Papers 热门论文（日/周/月）
-- 通过 DeepLX API 自动将论文摘要翻译为中文
+- **双翻译后端**：DeepLX 或 OpenAI 兼容 LLM（OpenAI、硅基流动、DeepSeek 等）
 - 中英文摘要对照展示
 - 趋势分析 + 推荐阅读排序
+- **自动降级**：主后端失败时无缝切换到备用后端，都失败则保留英文原文
 
 ## 配置
 
@@ -17,9 +18,9 @@ HuggingFace Papers 热门论文获取与中文翻译 — Hermes Agent skill
 pip3 install python-dotenv
 ```
 
-### DeepLX Token / OpenAI LLM
+### 翻译后端
 
-翻译功能支持两种后端，通过 `.env` 配置：
+翻译功能支持两种后端，通过 `.env` 文件配置（复制 `.env.example` 为 `.env` 并根据需要填写）：
 
 **DeepLX（默认）：**
 ```env
@@ -35,6 +36,7 @@ OPENAI_API_KEY="sk-your-key-here"
 OPENAI_MODEL="gpt-4o-mini"
 ```
 
+> 支持任意 OpenAI 兼容 API，只需修改 `OPENAI_BASE_URL` 和 `OPENAI_MODEL` 即可切换不同的 LLM 服务商。
 > 主后端失败时自动降级到另一后端，都失败则保留英文原文。
 
 ## 使用方法
@@ -65,7 +67,20 @@ python3 scripts/generate_report.py --period weekly --no-translate
 
 ## 翻译
 
-使用 DeepLX API 自动翻译摘要，单条翻译失败时自动降级保留英文原文。
+### DeepLX
+
+专用翻译 API，速度快、成本低，适合大批量摘要翻译。通过 `DEEPLX_URL` 配置端点。
+
+### OpenAI 兼容 LLM
+
+通过 LLM 进行翻译，利用大模型的语义理解能力，翻译质量更高。支持任何兼容 OpenAI 格式的 API：
+
+| 服务商 | BASE_URL | 推荐模型 |
+|--------|----------|----------|
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| 硅基流动 | `https://api.siliconflow.cn/v1` | `Qwen/Qwen2.5-7B-Instruct` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-turbo` |
 
 ## Agent 集成
 
