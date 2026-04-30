@@ -7,6 +7,7 @@ Usage:
     python generate_report.py --period weekly --limit 10
     python generate_report.py --period weekly --output report.md
     python generate_report.py --period weekly --no-translate  # 输出英文原文
+    python generate_report.py --period daily --date 2026-04-29  # 指定日期
 """
 
 import argparse
@@ -23,7 +24,7 @@ from get_papers import get_papers
 # 设置方式（优先级从高到低）：
 #   1. export 环境变量（任意框架通用）
 #   2. 在 skill 目录下创建 .env 文件（任意框架通用）
-#   3. 写入 ~/.hermes/.env（仅 Hermes Agent）
+#   3. 在 agent 的默认 env 文件中配置（如 ~/.hermes/.env）
 import os
 from dotenv import load_dotenv
 

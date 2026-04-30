@@ -4,9 +4,10 @@ HuggingFace Papers Fetcher
 获取 HuggingFace Papers 热门论文
 
 Usage:
-    python get_papers.py --period daily    # 今日热门
-    python get_papers.py --period weekly   # 本周热门
-    python get_papers.py --period monthly  # 本月热门
+    python get_papers.py --period daily          # 今日热门
+    python get_papers.py --period weekly         # 本周热门
+    python get_papers.py --period monthly        # 本月热门
+    python get_papers.py --period daily --date 2026-04-29   # 指定日期
     python get_papers.py --period weekly --limit 10
 """
 
@@ -17,13 +18,24 @@ import sys
 import urllib.request
 import urllib.error
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 
-def get_hf_papers_url(period: str) -> str:
-    """根据时间范围生成对应的 HuggingFace Papers URL"""
-    today = datetime.now()
+def get_hf_papers_url(period: str, custom_date: Optional[str] = None) -> str:
+    """根据时间范围和可选的自定义日期生成 HuggingFace Papers URL"""
+    if custom_date:
+        # 使用自定义日期
+        if period == "daily":
+            return f"https://huggingface.co/papers/date/{custom_date}"
+        elif period == "weekly":
+            d = datetime.strptime(custom_date, "%Y-%m-%d")
+            week_number = d.isocalendar()[1]
+            return f"https://huggingface.co/papers/week/{d.strftime('%Y')}-W{week_number:02d}"
+        elif period == "monthly":
+            d = datetime.strptime(custom_date, "%Y-%m-%d")
+            return f"https://huggingface.co/papers/month/{d.strftime('%Y-%m')}"
     
+    today = datetime.now()
     if period == "daily":
         return f"https://huggingface.co/papers/date/{today.strftime('%Y-%m-%d')}" 
     elif period == "weekly":
@@ -88,15 +100,15 @@ def parse_papers(html: str, limit: int = 10) -> List[Dict]:
         search_range = 15000
         search_block = decoded[id_pos:id_pos+search_range]
         
-        # 提取 title - 找到 "title":" 后跟的内容
+        # 提取 title
         title_match = re.search(r'"title":"(.+?)"', search_block)
         title = title_match.group(1) if title_match else f"arXiv:{pid}"
         
-        # 提取 summary - 找到 "summary":" 后跟的内容
+        # 提取 summary
         summary_match = re.search(r'"summary":"(.+?)(?:","|"\})', search_block)
         summary = summary_match.group(1) if summary_match else ""
         
-        # 在 id 之后提取 upvotes
+        # 提取 upvotes
         upvotes_match = re.search(r'"upvotes":(\d+)', search_block)
         upvotes = int(upvotes_match.group(1)) if upvotes_match else 0
         
@@ -114,9 +126,9 @@ def parse_papers(html: str, limit: int = 10) -> List[Dict]:
     return papers
 
 
-def get_papers(period: str = "weekly", limit: int = 10) -> List[Dict]:
+def get_papers(period: str = "weekly", limit: int = 10, custom_date: Optional[str] = None) -> List[Dict]:
     """获取热门论文列表"""
-    url = get_hf_papers_url(period)
+    url = get_hf_papers_url(period, custom_date)
     html = fetch_html(url)
     return parse_papers(html, limit)
 
@@ -171,11 +183,13 @@ def main():
                         help="输出格式: md/json")
     parser.add_argument("--output", type=str, default=None,
                         help="输出文件路径 (可选)")
+    parser.add_argument("--date", type=str, default=None,
+                        help="自定义日期 (YYYY-MM-DD)，覆盖自动计算的日期")
     
     args = parser.parse_args()
     
     try:
-        papers = get_papers(args.period, args.limit)
+        papers = get_papers(args.period, args.limit, args.date)
         
         if args.format == "json":
             output = format_json(papers)

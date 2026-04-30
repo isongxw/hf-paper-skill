@@ -26,6 +26,12 @@ description: |-
   1. 运行 `scripts/get_papers.py` 获取论文数据
   2. 运行 `scripts/generate_report.py --output reports/<文件名>.md` 生成报告并保存到文件
   3. 将报告内容输出给用户，并告知文件路径方便放入 Obsidian
+required_environment_variables:
+  - DEEPLX_URL — DeepLX 翻译 API 端点（使用 DeepLX 后端时必需）
+  - OPENAI_API_KEY — OpenAI 兼容 API 密钥（使用 OpenAI 后端时必需）
+  - OPENAI_BASE_URL — OpenAI 兼容 API 地址（可选，默认 https://api.openai.com/v1）
+  - OPENAI_MODEL — 翻译用模型名（可选，默认 gpt-4o-mini）
+  - TRANSLATE_BACKEND — 翻译后端选择（可选，默认 deeplx）
 ---
 
 # HuggingFace Papers Skill
@@ -147,10 +153,3 @@ python3 scripts/generate_report.py --period weekly --output report.md
 如果获取失败：
 1. 检查网络连接
 2. 稍后重试
-
-## GitHub 仓库
-
-此 skill 托管于 GitHub：
-- **仓库**: https://github.com/isongxw/hf-paper-skill
-- **远程**: `origin` → `isongxw/hf-paper-skill`
-- 更新 skill 后，应自动 commit 并 push 到该仓库
