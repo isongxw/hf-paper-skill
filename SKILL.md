@@ -1,9 +1,11 @@
 ---
-name: hf-papers
+name: HuggingFace Papers
 description: |-
-  获取和总结 HuggingFace Papers 热门论文。
+  获取 HuggingFace Papers 热门 AI 论文，自动翻译摘要为中文，生成带趋势分析的双语报告。
 
-  **使用场景:**
+  支持 DeepLX 和 OpenAI 兼容 LLM 两种翻译后端，自动降级。可保存为 Markdown 文件，方便导入 Obsidian 等笔记工具。
+
+  使用场景:
   1. 用户想查看 HuggingFace 上的热门论文
   2. 用户问"最近有什么 AI 论文推荐"或"有什么新论文"
   3. 用户需要了解某个领域的最新研究动态
