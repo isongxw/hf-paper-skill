@@ -82,6 +82,10 @@ python3 scripts/generate_report.py --period weekly --no-translate
 | DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
 | 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-turbo` |
 
+## 友情链接
+
+- [LINUX DO](https://linux.do/) — 现代化 Linux 开源社区
+
 ## Agent 集成
 
 将本 skill 接入不同的 AI Agent 框架，让 Agent 在用户问"最近有什么热门论文"时自动调起。
