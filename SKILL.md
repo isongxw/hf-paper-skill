@@ -105,3 +105,10 @@ python3 scripts/generate_report.py --period weekly --output report.md
 如果获取失败：
 1. 检查网络连接
 2. 稍后重试
+
+## GitHub 仓库
+
+此 skill 托管于 GitHub：
+- **仓库**: https://github.com/isongxw/hf-paper-skill
+- **远程**: `origin` → `isongxw/hf-paper-skill`
+- 更新 skill 后，应自动 commit 并 push 到该仓库

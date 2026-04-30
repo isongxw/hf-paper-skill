@@ -19,8 +19,12 @@ from typing import List, Dict, Optional
 
 from get_papers import get_papers
 
-# DeepLX API 配置
-DEEPLX_URL = "https://api.deeplx.org/_vBNboa8ejbte_6IRejCo2OEh-MHks5laSPKeWjc6Ro/translate"
+# DeepLX API 配置 - 从环境变量读取，禁止硬编码 token
+# 设置方式（任选其一）：
+#   1. export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+#   2. 写入 ~/.hermes/.env：DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+import os
+DEEPLX_URL = os.environ.get("DEEPLX_URL", "")
 DEEPLX_TIMEOUT = 10
 
 

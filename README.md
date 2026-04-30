@@ -9,6 +9,22 @@ HuggingFace Papers 热门论文获取与中文翻译 — Hermes Agent skill
 - 中英文摘要对照展示
 - 趋势分析 + 推荐阅读排序
 
+## 配置
+
+翻译功能需要 DeepLX API，通过环境变量设置：
+
+```bash
+export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+```
+
+或写入 `~/.hermes/.env`：
+
+```
+DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+```
+
+也可以复制 `.env.example` 为 `.env` 并填入 token（`.env` 已加入 `.gitignore`，不会提交）。
+
 ## 使用方法
 
 ```bash
