@@ -44,19 +44,26 @@ description: |-
 
 ## 使用方法
 
-### 前置条件
+### 前置条件：配置 DeepLX Token
 
-使用翻译功能前，需设置 `DEEPLX_URL` 环境变量：
+翻译功能需要 DeepLX API Token。**三种方式任选其一**（脚本会自动按优先级加载）：
+
+| 优先级 | 方式 | 适用场景 |
+|:---:|------|----------|
+| 高 | `export DEEPLX_URL="..."` (环境变量) | 临时使用，任意框架 |
+| 中 | **skill 目录下的 `.env` 文件** | **Claude Code、OpenClaw 等任意框架** |
+| 低 | `~/.hermes/.env` | 仅 Hermes Agent |
+
+**推荐方式**（通用，适用于所有框架）：
 
 ```bash
-# 方式一：写入 ~/.hermes/.env（推荐，Hermes 自动加载）
-echo 'DEEPLX_URL="https://api.deeplx.org/你的token/translate"' >> ~/.hermes/.env
-
-# 方式二：临时 export
-export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+cd ~/.hermes/skills/research/hf-papers
+cp .env.example .env
+# 然后编辑 .env，将 token 替换为真实值
+# DEEPLX_URL="https://api.deeplx.org/你的真实token/translate"
 ```
 
-脚本路径相对于 skill 目录，即 `~/.hermes/skills/research/hf-papers/scripts/`。
+`.env` 已加入 `.gitignore`，不会提交到 GitHub。
 
 ### 常用命令
 

@@ -20,10 +20,24 @@ from typing import List, Dict, Optional
 from get_papers import get_papers
 
 # DeepLX API 配置 - 从环境变量读取，禁止硬编码 token
-# 设置方式（任选其一）：
+# 设置方式（优先级从高到低）：
 #   1. export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
-#   2. 写入 ~/.hermes/.env：DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+#   2. 在 skill 目录下创建 .env 文件（任意框架通用）
+#   3. 写入 ~/.hermes/.env（仅 Hermes Agent）
 import os
+import os.path
+
+# 尝试从本地 .env 文件加载（与脚本同目录或 skill 根目录）
+_local_env = os.path.join(os.path.dirname(__file__), '..', '.env')
+if os.path.exists(_local_env):
+    with open(_local_env) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                key, _, val = line.partition('=')
+                if key.strip() == 'DEEPLX_URL':
+                    os.environ.setdefault('DEEPLX_URL', val.strip().strip('"\''))
+
 DEEPLX_URL = os.environ.get("DEEPLX_URL", "")
 DEEPLX_TIMEOUT = 10
 
