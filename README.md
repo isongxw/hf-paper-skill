@@ -17,17 +17,25 @@ HuggingFace Papers 热门论文获取与中文翻译 — Hermes Agent skill
 pip3 install python-dotenv
 ```
 
-### DeepLX Token
+### DeepLX Token / OpenAI LLM
 
-翻译功能需要 DeepLX API Token。推荐在 skill 目录下创建 `.env` 文件（通用所有框架）：
+翻译功能支持两种后端，通过 `.env` 配置：
 
-```bash
-cp .env.example .env
-# 编辑 .env，填入真实 token
-DEEPLX_URL="https://api.deeplx.org/你的真实token/translate"
+**DeepLX（默认）：**
+```env
+TRANSLATE_BACKEND="deeplx"
+DEEPLX_URL="https://api.deeplx.org/你的token/translate"
 ```
 
-`.env` 已加入 `.gitignore`，不会提交到 GitHub。
+**OpenAI 兼容 LLM（OpenAI、硅基流动、DeepSeek 等）：**
+```env
+TRANSLATE_BACKEND="openai"
+OPENAI_BASE_URL="https://api.openai.com/v1"
+OPENAI_API_KEY="sk-your-key-here"
+OPENAI_MODEL="gpt-4o-mini"
+```
+
+> 主后端失败时自动降级到另一后端，都失败则保留英文原文。
 
 ## 使用方法
 

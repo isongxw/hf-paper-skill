@@ -19,9 +19,9 @@ from typing import List, Dict, Optional
 
 from get_papers import get_papers
 
-# DeepLX API 配置 - 从环境变量读取，禁止硬编码 token
+# DeepLX / OpenAI LLM 翻译配置 - 从环境变量读取，禁止硬编码 token
 # 设置方式（优先级从高到低）：
-#   1. export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+#   1. export 环境变量（任意框架通用）
 #   2. 在 skill 目录下创建 .env 文件（任意框架通用）
 #   3. 写入 ~/.hermes/.env（仅 Hermes Agent）
 import os
@@ -31,15 +31,26 @@ from dotenv import load_dotenv
 _local_env = os.path.join(os.path.dirname(__file__), '..', '.env')
 load_dotenv(_local_env)
 
+# --- DeepLX 配置 ---
 DEEPLX_URL = os.environ.get("DEEPLX_URL", "")
 DEEPLX_TIMEOUT = 10
 
+# --- OpenAI LLM 配置（备选翻译后端） ---
+TRANSLATE_BACKEND = os.environ.get("TRANSLATE_BACKEND", "deeplx")  # deeplx / openai
+OPENAI_BASE_URL = os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+OPENAI_TIMEOUT = 30
 
-def translate_text(text: str, target_lang: str = "ZH", source_lang: str = "EN") -> Optional[str]:
-    """使用 DeepLX API 翻译文本"""
-    if not text or not text.strip():
-        return text
+TRANSLATION_SYSTEM_PROMPT = (
+    "You are a professional translator. Translate the following English academic paper "
+    "abstract into Chinese. Keep all technical terms accurate. Output only the translation, "
+    "no explanations, no notes."
+)
 
+
+def translate_deeplx(text: str, target_lang: str = "ZH", source_lang: str = "EN") -> Optional[str]:
+    """使用 DeepLX API 翻译"""
     payload = json.dumps({
         "text": text,
         "source_lang": source_lang,
@@ -62,9 +73,69 @@ def translate_text(text: str, target_lang: str = "ZH", source_lang: str = "EN") 
             if result.get("code") == 200:
                 return result.get("data", "").strip()
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as e:
-        print(f"  ⚠️ 翻译失败 ({type(e).__name__})，保留原文", file=sys.stderr)
+        print(f"  ⚠️ DeepLX 翻译失败 ({type(e).__name__})", file=sys.stderr)
 
-    return text
+    return None
+
+
+def translate_openai(text: str, target_lang: str = "ZH", source_lang: str = "EN") -> Optional[str]:
+    """使用 OpenAI 兼容 API 翻译"""
+    if not OPENAI_API_KEY:
+        print("  ⚠️ OPENAI_API_KEY 未设置，跳过 LLM 翻译", file=sys.stderr)
+        return None
+
+    payload = json.dumps({
+        "model": OPENAI_MODEL,
+        "messages": [
+            {"role": "system", "content": TRANSLATION_SYSTEM_PROMPT},
+            {"role": "user", "content": f"Translate from {source_lang} to {target_lang}:\n\n{text}"}
+        ],
+        "temperature": 0.1,
+        "max_tokens": 4096
+    }).encode("utf-8")
+
+    url = OPENAI_BASE_URL.rstrip("/") + "/chat/completions"
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {OPENAI_API_KEY}",
+            "User-Agent": "hf-papers-skill/1.0"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(req, timeout=OPENAI_TIMEOUT) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            content = result.get("choices", [{}])[0].get("message", {}).get("content", "").strip()
+            if content:
+                return content
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"  ⚠️ OpenAI 翻译失败 ({type(e).__name__})", file=sys.stderr)
+
+    return None
+
+
+def translate_text(text: str, target_lang: str = "ZH", source_lang: str = "EN") -> Optional[str]:
+    """翻译文本（根据 TRANSLATE_BACKEND 选择后端）"""
+    if not text or not text.strip():
+        return text
+
+    if TRANSLATE_BACKEND == "openai":
+        result = translate_openai(text, target_lang, source_lang)
+        if result:
+            return result
+        print("  ⚠️ LLM 翻译失败，降级到 DeepLX...", file=sys.stderr)
+        return translate_deeplx(text, target_lang, source_lang) or text
+
+    # 默认：DeepLX
+    result = translate_deeplx(text, target_lang, source_lang)
+    if result:
+        return result
+    print("  ⚠️ DeepLX 翻译失败，降级到 OpenAI LLM...", file=sys.stderr)
+    return translate_openai(text, target_lang, source_lang) or text
 
 
 def batch_translate(texts: List[str], target_lang: str = "ZH", source_lang: str = "EN") -> List[str]:

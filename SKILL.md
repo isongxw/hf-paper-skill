@@ -53,24 +53,35 @@ pip3 install python-dotenv
 
 ## 使用方法
 
-### 前置条件：配置 DeepLX Token
+### 前置条件：配置翻译后端
 
-翻译功能需要 DeepLX API Token。**三种方式任选其一**（脚本会自动按优先级加载）：
-
-| 优先级 | 方式 | 适用场景 |
-|:---:|------|----------|
-| 高 | `export DEEPLX_URL="..."` (环境变量) | 临时使用，任意框架 |
-| 中 | **skill 目录下的 `.env` 文件** | **Claude Code、OpenClaw 等任意框架** |
-| 低 | `~/.hermes/.env` | 仅 Hermes Agent |
-
-**推荐方式**（通用，适用于所有框架）：
+脚本支持 **DeepLX** 和 **OpenAI 兼容 API** 两种翻译后端，通过 `.env` 文件配置：
 
 ```bash
 cd ~/.hermes/skills/research/hf-papers
 cp .env.example .env
-# 然后编辑 .env，将 token 替换为真实值
-# DEEPLX_URL="https://api.deeplx.org/你的真实token/translate"
+# 然后编辑 .env
 ```
+
+#### 方式一：DeepLX（默认）
+
+```env
+TRANSLATE_BACKEND="deeplx"
+DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+```
+
+#### 方式二：OpenAI 兼容 LLM
+
+兼容任何 OpenAI 格式的 API（OpenAI、Azure、硅基流动、DeepSeek 等）：
+
+```env
+TRANSLATE_BACKEND="openai"
+OPENAI_BASE_URL="https://api.openai.com/v1"
+OPENAI_API_KEY="sk-your-key-here"
+OPENAI_MODEL="gpt-4o-mini"
+```
+
+> **降级策略**：主后端失败时自动降级到另一后端，都失败则保留英文原文。
 
 `.env` 已加入 `.gitignore`，不会提交到 GitHub。
 
