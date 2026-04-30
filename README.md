@@ -67,6 +67,58 @@ python3 scripts/generate_report.py --period weekly --no-translate
 
 使用 DeepLX API 自动翻译摘要，单条翻译失败时自动降级保留英文原文。
 
-## Hermes Agent 集成
+## Agent 集成
 
-设为 Hermes Agent skill 后，用户说"最近有什么热门论文？"即可自动调起此工具。
+将本 skill 接入不同的 AI Agent 框架，让 Agent 在用户问"最近有什么热门论文"时自动调起。
+
+### Hermes Agent
+
+```bash
+# 方式一：克隆到 Hermes skills 目录
+git clone https://github.com/isongxw/hf-paper-skill.git ~/.hermes/skills/research/hf-papers
+
+# 方式二：如果已克隆到其他地方，创建软链接
+ln -s /path/to/hf-paper-skill ~/.hermes/skills/research/hf-papers
+```
+
+完成后在 `.env` 中配置翻译 token，Hermes 下次启动时自动识别此 skill。
+
+### Claude Code (Claude CLI)
+
+将本 skill 目录添加到 Claude Code 的工作区中，或直接在项目中使用：
+
+```bash
+# 克隆到项目内
+cd your-project
+git clone https://github.com/isongxw/hf-paper-skill.git skills/hf-papers
+
+# 在 CLAUDE.md 中添加配置说明
+cat >> CLAUDE.md << 'EOF'
+
+## hf-papers skill
+
+路径：`skills/hf-papers/`
+使用：`python3 skills/hf-papers/scripts/generate_report.py --period weekly --limit 10`
+配置：复制 `skills/hf-papers/.env.example` 为 `skills/hf-papers/.env` 并填入 token
+EOF
+```
+
+### OpenClaw
+
+```bash
+# 克隆到 OpenClaw workspace 的 skills 目录
+git clone https://github.com/isongxw/hf-paper-skill.git /path/to/openclaw/workspace/skills/hf-papers
+```
+
+### 通用（任意框架）
+
+本 skill 不依赖任何特定框架，纯 Python 脚本运行，通过 `.env` 文件配置。任何能执行 shell 命令的 Agent 都可以使用：
+
+```bash
+git clone https://github.com/isongxw/hf-paper-skill.git
+cd hf-paper-skill
+cp .env.example .env
+# 编辑 .env 填入翻译 token
+pip3 install python-dotenv
+python3 scripts/generate_report.py --period weekly
+```
