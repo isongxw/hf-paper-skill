@@ -44,6 +44,22 @@ description: |-
 
 ## 使用方法
 
+### 前置条件
+
+使用翻译功能前，需设置 `DEEPLX_URL` 环境变量：
+
+```bash
+# 方式一：写入 ~/.hermes/.env（推荐，Hermes 自动加载）
+echo 'DEEPLX_URL="https://api.deeplx.org/你的token/translate"' >> ~/.hermes/.env
+
+# 方式二：临时 export
+export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+```
+
+脚本路径相对于 skill 目录，即 `~/.hermes/skills/research/hf-papers/scripts/`。
+
+### 常用命令
+
 ```bash
 # 获取论文列表（默认今日热门）
 python3 scripts/get_papers.py
