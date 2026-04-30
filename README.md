@@ -70,7 +70,3 @@ python3 scripts/generate_report.py --period weekly --no-translate
 ## Hermes Agent 集成
 
 设为 Hermes Agent skill 后，用户说"最近有什么热门论文？"即可自动调起此工具。
-
-```bash
-cp -r hf-paper-skill ~/.hermes/skills/research/hf-papers/
-```

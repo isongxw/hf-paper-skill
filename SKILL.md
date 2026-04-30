@@ -58,7 +58,6 @@ pip3 install python-dotenv
 脚本支持 **DeepLX** 和 **OpenAI 兼容 API** 两种翻译后端，通过 `.env` 文件配置：
 
 ```bash
-cd ~/.hermes/skills/research/hf-papers
 cp .env.example .env
 # 然后编辑 .env
 ```
@@ -107,7 +106,7 @@ python3 scripts/generate_report.py --period weekly --no-translate
 python3 scripts/generate_report.py --period weekly --output report.md
 ```
 
-脚本路径相对于 skill 目录，即 `~/.hermes/skills/research/hf-papers/scripts/`。
+脚本在 skill 目录下的 `scripts/` 文件夹中，所有命令均从 skill 根目录执行。
 
 ## 参数说明
 
