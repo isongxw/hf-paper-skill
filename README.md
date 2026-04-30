@@ -11,19 +11,23 @@ HuggingFace Papers 热门论文获取与中文翻译 — Hermes Agent skill
 
 ## 配置
 
-翻译功能需要 DeepLX API，通过环境变量设置：
+### 依赖
 
 ```bash
-export DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+pip3 install python-dotenv
 ```
 
-或写入 `~/.hermes/.env`：
+### DeepLX Token
 
-```
-DEEPLX_URL="https://api.deeplx.org/你的token/translate"
+翻译功能需要 DeepLX API Token。推荐在 skill 目录下创建 `.env` 文件（通用所有框架）：
+
+```bash
+cp .env.example .env
+# 编辑 .env，填入真实 token
+DEEPLX_URL="https://api.deeplx.org/你的真实token/translate"
 ```
 
-也可以复制 `.env.example` 为 `.env` 并填入 token（`.env` 已加入 `.gitignore`，不会提交）。
+`.env` 已加入 `.gitignore`，不会提交到 GitHub。
 
 ## 使用方法
 

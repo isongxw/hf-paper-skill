@@ -42,6 +42,15 @@ description: |-
 4. "本周/本月有什么新论文？"
 5. "介绍一下最近的 AI 研究趋势"
 
+## 依赖
+
+- Python 3.8+
+- `python-dotenv` — 加载 `.env` 文件
+
+```bash
+pip3 install python-dotenv
+```
+
 ## 使用方法
 
 ### 前置条件：配置 DeepLX Token

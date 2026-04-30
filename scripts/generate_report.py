@@ -25,18 +25,11 @@ from get_papers import get_papers
 #   2. 在 skill 目录下创建 .env 文件（任意框架通用）
 #   3. 写入 ~/.hermes/.env（仅 Hermes Agent）
 import os
-import os.path
+from dotenv import load_dotenv
 
-# 尝试从本地 .env 文件加载（与脚本同目录或 skill 根目录）
+# 优先加载本地 .env（与脚本同目录或 skill 根目录）
 _local_env = os.path.join(os.path.dirname(__file__), '..', '.env')
-if os.path.exists(_local_env):
-    with open(_local_env) as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith('#'):
-                key, _, val = line.partition('=')
-                if key.strip() == 'DEEPLX_URL':
-                    os.environ.setdefault('DEEPLX_URL', val.strip().strip('"\''))
+load_dotenv(_local_env)
 
 DEEPLX_URL = os.environ.get("DEEPLX_URL", "")
 DEEPLX_TIMEOUT = 10
